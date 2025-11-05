@@ -130,5 +130,5 @@ mytool: option ‘-v’ does not take a value
 To generate documentation:
 
 ```bash
-ldoc -s '!new' -d ldoc lua
+ldoc -s '!new' -d ldoc argp.lua
 ```

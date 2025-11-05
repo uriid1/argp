@@ -20,13 +20,13 @@ function argp:new(config)
 end
 
 --- Add single option
--- @param opt (table) option definition with keys
---  * `short` (string) Short form (e.g. `'v'` for `-v`)
---  * `long` (string) Long form (e.g. `'verbose'` for `--verbose`)
---  * `description` (string) Option description for help text
---  * `type` (string) Expected type: `'string'` or `'number'`
---  * `count_params` (number|string) Number of expected comma-separated params, or `'*'` for unlimited
---  * `dest` (string) Optional key name in parsed table
+-- @param[optchain] opt (table) option definition with keys
+--  @param opt.short (string) Short form (e.g. `'v'` for `-v`)
+--  @param opt.long (string) Long form (e.g. `'verbose'` for `--verbose`)
+--  @param opt.description (string) Option description for help text
+--  @param opt.type (string) Expected type: `'string'` or `'number'`
+--  @param opt.count_params (number|string) Number of expected comma-separated params, or `'*'` for unlimited
+--  @param opt.dest (string) Optional key name in parsed table
 function argp:add_option(opt)
   local option = {
     short = opt.short,
