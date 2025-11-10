@@ -56,21 +56,30 @@ end
 
 --- Internal
 --
+local function typeConverter(__type, value)
+  if __type == 'number' then
+    return tonumber(value)
+  elseif __type == 'boolean' then
+    return value == 'true'
+  elseif __type == 'string' then
+    return tostring(value)
+  end
+end
+
+--- Internal
+--
 function argp:parse_comma_values(values_str, opt)
   local max_count = opt.count_params == '*' and math.huge or opt.count_params
   local count = 0
   local values = {}
 
   for part in values_str:gmatch('[^,]+') do
-    if opt.type == 'number' then
-      local numb = tonumber(part)
-      if numb == nil then
-        error(('%s: option ‘--%s’: numeric value expected, got “%s”'):format(
-          self.name, opt.dest, part))
-      end
-      table.insert(values, numb)
+    local convertedValue = typeConverter(opt.type, part)
+    if convertedValue then
+      table.insert(values, convertedValue)
     else
-      table.insert(values, part)
+      error(('%s: option ‘--%s’: %s value expected, got “%s”'):format(
+        self.name, opt.dest, opt.type, part))
     end
 
     count = count + 1
@@ -100,14 +109,26 @@ function argp:parse_short_or_long(arg, type)
   end
 
   if opt.count_params == 0 then
-    if value ~= nil and value ~= '' then
+    if value ~= '' or value == nil then
       error(('%s: option ‘-%s’ does not take a value'):format(self.name, name))
     end
 
     return opt.dest, true
+  elseif opt.count_params == 1 then
+    if value ~= nil and value == '' then
+      error(('%s: option ‘-%s’ requires an argument'):format(self.name, name))
+    end
+
+    local convertedValue = typeConverter(opt.type, value)
+    if convertedValue == nil then
+      error(('%s: option ‘--%s’: %s value expected, got “%s”'):format(
+        self.name, opt.dest, opt.type, value))
+    end
+
+    return opt.dest, convertedValue
   else
     if value == nil or value == '' then
-      error(('%s: option ‘-%s’ requires an argument'):format(self.name, name))
+      error(('%s: option ‘-%s’ requires an arguments'):format(self.name, name))
     end
 
     return opt.dest, self:parse_comma_values(value, opt)
