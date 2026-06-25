@@ -1,5 +1,10 @@
---- Test
---
+#!/bin/env lua
+
+-- ./test.lua --ports 80,443,8080 --threads 4 --verbose
+-- ./test.lua --ports=80,443,8080 --threads=4 --verbose
+-- ./test.lua -v
+-- ./test.lua --help
+
 local argp = require('argp')
 
 local parser = argp:new({
@@ -39,17 +44,16 @@ local args = parser:parse(arg)
 
 if args.help then
   parser:print_system_help()
-
-elseif args.ports then
-  -- pass
-
-elseif args.threads then
-  -- pass
-
-elseif args.verbose then
-  -- pass
 end
 
-for k, v in pairs(args) do
-  print(k, v)
+if args.ports then
+  print('Ports: ', table.concat(args.ports, ', '))
+end
+
+if args.threads then
+  print('Threads: ', args.threads)
+end
+
+if args.verbose then
+  print('Is versobe: ', args.verbose)
 end

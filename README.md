@@ -3,15 +3,15 @@
 # Lightweight GNU-style Argument Parser
 
 A minimalist command-line argument parser compatible with **GNU Tools** style.  
-It supports short and long options, `=` assignments, multiple arguments, and generates help output in classic GNU format.
+It supports short and long options, `=` and space-separated assignments, multiple arguments, and generates help output in classic GNU format.
 
 ---
 
-## 🚀 Features
+## Features
 
 - Supports short (`-v`) and long (`--verbose`) options  
-- Allows `=` syntax for arguments: `--threads=4`  
-- Parses comma-separated values: `--ports=80,443,8080`  
+- Allows `=` or space syntax for arguments: `--threads=4` or `--threads 4`  
+- Parses comma-separated values: `--ports=80,443,8080` or `--ports 80,443,8080`  
 - Supports fixed (`count_params = n`) or unlimited (`count_params = '*'`) number of arguments  
 - Type checking (`string`, `number`)  
 - Automatic help generation in GNU style (`argp:print_system_help()`)  
@@ -19,7 +19,7 @@ It supports short and long options, `=` assignments, multiple arguments, and gen
 
 ---
 
-## 📦 Installation
+## Installation
 
 Via **Luarocks**:
 
@@ -35,7 +35,7 @@ local argp = require('argp')
 
 ---
 
-## 🧩 Usage Example
+## Usage Example
 
 ```lua
 local argp = require('argp')
@@ -69,8 +69,7 @@ parser:options({
   {
     long = 'ports',
     description = 'List of TCP ports',
-    type = 'number',
-    count_params = '*'
+    type = 'number', count_params = '*'
   }
 })
 
@@ -78,25 +77,24 @@ local args = parser:parse(arg)
 
 if args.help then
   parser:print_system_help()
-
-elseif args.ports then
-  -- handle ports
-
-elseif args.threads then
-  -- handle threads
-
-elseif args.verbose then
-  -- handle verbose mode
 end
 
-for k, v in pairs(args) do
-  print(k, v)
+if args.ports then
+  print('Ports: ', table.concat(args.ports, ', '))
+end
+
+if args.threads then
+  print('Threads: ', args.threads)
+end
+
+if args.verbose then
+  print('Is versobe: ', args.verbose)
 end
 ```
 
 ---
 
-## 🧠 Example Help Output
+## Example Help Output
 
 ```
 Usage: mytool [OPTION...]
@@ -114,7 +112,7 @@ Report bugs to <dev@example.com>.
 
 ---
 
-## ⚙️ Error Messages (GNU-style)
+## Error Messages (GNU-style)
 
 ```
 mytool: option ‘--threads’: numeric value expected, got “abc”
@@ -125,7 +123,7 @@ mytool: option ‘-v’ does not take a value
 
 ---
 
-## 🧾 LDOC
+## LDOC
 
 To generate documentation:
 

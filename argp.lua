@@ -142,19 +142,34 @@ function argp:parse(args)
 
   local result = {}
 
-  for i = 1, #args do
+  local i = 1
+  while i <= #args do
     local current = args[i]
 
     -- Long options like --option or --option=value,...
-    if current:find('^%-%-') then
-      local dest, value = self:parse_short_or_long(current, 'long')
-      result[dest] = value
-
     -- Short options like -o or -o=value,...
-    elseif current:find('^%-') then
-      local dest, value = self:parse_short_or_long(current, 'short')
+    if current:find('^%-') then
+      local form = current:find('^%-%-') and 'long' or 'short'
+
+      -- Space-separated value, e.g. `--ports 8080,8081`.
+      -- When the option expects a value but none is attached via `=`,
+      -- consume the following argument as its value.
+      if not current:find('=') then
+        local name = current:match(form == 'long' and '^%-%-(.+)' or '^%-(.+)')
+        local opt = self._options_map[name]
+        local next_arg = args[i + 1]
+
+        if opt and opt.count_params ~= 0 and next_arg and not next_arg:find('^%-') then
+          current = current .. '=' .. next_arg
+          i = i + 1
+        end
+      end
+
+      local dest, value = self:parse_short_or_long(current, form)
       result[dest] = value
     end
+
+    i = i + 1
   end
 
   return result
